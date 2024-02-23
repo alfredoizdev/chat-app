@@ -5,6 +5,22 @@ interface PostRequestData {
     [key: string]: string | number | boolean;
 }
 
+function handleResponse<TResponseData>(response: { ok: boolean }, data: { message?: string }): TResponseData | { error: true, message: string } | undefined {
+    if (!response.ok) {
+        let message: string = "";
+
+        if (data?.message) {
+            message = data.message;
+        } else {
+            message = 'An unknown error occurred';
+        }
+
+        return { error: true, message } as TResponseData;
+    }
+
+    return undefined;
+}
+
 const postRequest = async (url: string, body: PostRequestData): Promise<TResponseData> => {
     try {
         const response = await fetch(`${BASE_API_URI}/${url}`, {
@@ -29,6 +45,12 @@ const postRequest = async (url: string, body: PostRequestData): Promise<TRespons
             return { error: true, message } as TResponseData;
         }
 
+        const errorResponse = handleResponse<TResponseData>(response, data);
+
+        if (errorResponse) {
+            return errorResponse as TResponseData;
+        }
+
         return data as TResponseData;
 
 
@@ -38,6 +60,28 @@ const postRequest = async (url: string, body: PostRequestData): Promise<TRespons
     }
 }
 
+const getRequest = async (url: string): Promise<TResponseData> => {
+
+    try {
+        const response = await fetch(`${BASE_API_URI}/${url}`);
+
+        const data = await response.json();
+
+        const errorResponse = handleResponse<TResponseData>(response, data);
+
+        if (errorResponse) {
+            return errorResponse as TResponseData;
+        }
+
+        return data as TResponseData;
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+};
+
 export {
     postRequest,
+    getRequest
 }

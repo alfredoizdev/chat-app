@@ -1,8 +1,8 @@
+import { TChat } from "./Chat";
 import { TUser } from "./User";
 
-export type TResponseData = {
+export type TResponseData = TUser & TChat[] & {
     status: string;
-    data: TUser;
     error?: boolean;
     message?: string;
 }

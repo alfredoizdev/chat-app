@@ -54,7 +54,8 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
             }
 
             saveObjectLocalstorage('user', response);
-            setUser(response.data);
+            setUser(response);
+
 
         } catch (error) {
             if (error instanceof Error) {
@@ -76,7 +77,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
             }
 
             saveObjectLocalstorage('user', response);
-            setUser(response.data);
+            setUser(response);
 
         } catch (error) {
             if (error instanceof Error) {
