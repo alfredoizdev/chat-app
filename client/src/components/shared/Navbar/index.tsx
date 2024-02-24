@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { styled } from '@mui/system';
 import { Typography } from '@mui/material';
 import useAuthContext from '@/hooks/useAuthContext';
+import MenuIcon from '@mui/icons-material/Menu';
 
 const User = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -52,6 +53,22 @@ const Menu = styled('ul')({
   },
 });
 
+const BurgerMenu = styled('div')(({ theme }) => ({
+  display: 'none',
+  cursor: 'pointer',
+  borderRadius: '50%',
+  padding: '5px',
+  backgroundColor: theme.palette.primary.main,
+  color: '#333333',
+  width: '30px',
+  height: '30px',
+  '@media (max-width: 570px)': {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+}));
+
 
 const Navbar = () => {
 
@@ -88,6 +105,9 @@ const Navbar = () => {
             </li>
           </>}
         </Menu>
+        <BurgerMenu>
+          <MenuIcon />
+        </BurgerMenu>
       </MenuContainer>
     </NavbarContainer>
   );

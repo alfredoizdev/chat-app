@@ -33,7 +33,7 @@ export const getMessages = async (req: Request, res: Response) => {
     }
 
     try {
-        const messages = await Message.findOne({ chatId });
+        const messages = await Message.find({ chatId });
 
         res.status(200).json(messages);
 

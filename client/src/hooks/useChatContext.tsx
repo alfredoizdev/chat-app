@@ -9,7 +9,12 @@ const useChatContext = () => {
         setUserChatError,
         setUserChats,
         setIsUserChatLoading,
+        updateCurrentChat,
+        sendMessage,
+        currentChat,
         userChats,
+        messages,
+        chatWithName,
         user,
     } = useContext(ChatContext);
 
@@ -47,7 +52,15 @@ const useChatContext = () => {
 
 
 
-    return { createChat, userChats };
+    return {
+        createChat,
+        userChats,
+        currentChat,
+        updateCurrentChat,
+        sendMessage,
+        messages,
+        chatWithName
+    };
 };
 
 export default useChatContext;
