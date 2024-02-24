@@ -14,7 +14,8 @@ const useChatContext = () => {
         currentChat,
         userChats,
         messages,
-        chatWithName,
+        chatWith,
+        onlineUsers,
         user,
     } = useContext(ChatContext);
 
@@ -59,7 +60,8 @@ const useChatContext = () => {
         updateCurrentChat,
         sendMessage,
         messages,
-        chatWithName
+        chatWith,
+        onlineUsers
     };
 };
 

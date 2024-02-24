@@ -30,11 +30,26 @@ const UnreadMessage = styled("div")(({ theme }) => ({
     zIndex: 1,
 }));
 
+interface WrapperAvatarProps {
+    borderColor?: boolean;
+}
+
+
+const WraperAvatar = styled("div")<WrapperAvatarProps>(({ theme, borderColor }) => ({
+    position: "relative",
+    borderRadius: "50%",
+    overflow: "hidden",
+    width: "50px",
+    height: "50px",
+    border: `3px solid ${borderColor ? theme.palette.primary.main : "#3b3b3b"}`,
+}));
+
 
 const ChatItem = ({ chat }: ChatItemProps) => {
 
     const { recipient } = useFecthResipientUser(chat);
-    const { updateCurrentChat } = useChatContext();
+    const { updateCurrentChat, onlineUsers } = useChatContext();
+    const isOnline = onlineUsers.includes(recipient?.id || "");
 
     if (recipient === null) {
         return null;
@@ -44,11 +59,13 @@ const ChatItem = ({ chat }: ChatItemProps) => {
         <ListItem
             sx={{ cursor: "pointer" }}
             alignItems="flex-start"
-            onClick={() => updateCurrentChat(chat, recipient.name)}
+            onClick={() => updateCurrentChat(chat, recipient)}
         >
             <UnreadMessage>3</UnreadMessage>
             <ListItemAvatar>
-                <Avatar sx={{ border: '2px solid #fff' }} alt="Remy Sharp" src={avatar} />
+                <WraperAvatar borderColor={isOnline}>
+                    <Avatar alt="Remy Sharp" src={avatar} />
+                </WraperAvatar>
             </ListItemAvatar>
             <ListItemText
                 primary={recipient.name}

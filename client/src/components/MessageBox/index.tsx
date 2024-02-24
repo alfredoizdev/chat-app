@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import useAuthContext from '@/hooks/useAuthContext';
 import { TMessage } from '@/lib/types/Chat';
 import { Typography } from '@mui/material';
@@ -89,9 +90,17 @@ type MessageBoxProps = {
 };
 
 const MessageBox = ({ messages }: MessageBoxProps) => {
+    const endOfMessagesRef = useRef<HTMLDivElement>(null);
 
     const { user } = useAuthContext();
-    const { chatWithName } = useChatContext();
+    const { chatWith } = useChatContext();
+
+    useEffect(() => {
+        if (endOfMessagesRef.current) {
+            endOfMessagesRef.current.scrollTop = endOfMessagesRef.current.scrollHeight;
+        }
+    }, [messages]);
+
 
     if (messages.length === 0) {
         return <NoMessages>
@@ -103,9 +112,9 @@ const MessageBox = ({ messages }: MessageBoxProps) => {
     return (
         <>
             <HeaderMessage>
-                <Typography variant="h6">Chatting with {chatWithName}</Typography>
+                <Typography variant="h6">Chatting with {chatWith?.name}</Typography>
             </HeaderMessage>
-            <Container>
+            <Container ref={endOfMessagesRef}>
                 {messages.map((message, index) => (
                     <MessageContainer key={index}>
                         {message.senderId !== user?.id ? (
@@ -127,7 +136,7 @@ const MessageBox = ({ messages }: MessageBoxProps) => {
                                 </div>
                             </MessageRight>
                         )}
-                    </MessageContainer>
+                    </MessageContainer >
                 ))}
             </Container>
             <FormMessage />

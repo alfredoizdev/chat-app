@@ -1,7 +1,8 @@
 import { getRequest, postRequest } from "@/lib/services";
 import { TChat, TMessage } from "@/lib/types/Chat";
 import { TUser } from "@/lib/types/User";
-import { createContext, useCallback, useState } from "react";
+import { createContext, useCallback, useEffect, useState } from "react";
+import { Socket, io } from "socket.io-client";
 
 type ChatContextType = {
     userChats: TChat[] | null;
@@ -12,11 +13,13 @@ type ChatContextType = {
     messages: TMessage[];
     isMessagesLoading: boolean;
     messageError?: string | null;
-    chatWithName: string;
+    chatWith: TUser | null;
+    socket: Socket | null;
+    onlineUsers: string[];
     setUserChatError: (error: string) => void;
     setUserChats: (chats: TChat[]) => void;
     setIsUserChatLoading: (loading: boolean) => void;
-    updateCurrentChat: (chat: TChat, chatWithName: string) => void;
+    updateCurrentChat: (chat: TChat, chatWith: TUser) => void;
     getMessages: (chatId: string) => void;
     createChat: (firstId: string, secondId: string) => void;
     sendMessage: (message: string, senderId: string) => void;
@@ -33,7 +36,9 @@ export const ChatContext = createContext<ChatContextType>({
     userChatError: null,
     user: null,
     currentChat: null,
-    chatWithName: '',
+    chatWith: null,
+    socket: null,
+    onlineUsers: [],
     setUserChatError: () => { },
     setUserChats: () => { },
     setIsUserChatLoading: () => { },
@@ -58,7 +63,51 @@ const ChatProvider = ({ children, user }: ChatProviderProps) => {
     const [messages, setMessages] = useState<TMessage[]>([]);
     const [isMessagesLoading, setIsMessagesLoading] = useState(false);
     const [messageError, setMessageError] = useState<string | null>(null);
-    const [chatWithName, setChatWithName] = useState<string>('');
+    const [chatWith, setChatWith] = useState<TUser | null>(null);
+    const [socket, setSocket] = useState<Socket | null>(null);
+    const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
+
+    useEffect(() => {
+        if (!user) {
+            return;
+        }
+        const onGetOnlineUserIds = (users: TUser[]) => {
+            const userIds = users.map(user => user.id).filter((id): id is string => id !== undefined);
+            const newOnlineUsers = [...onlineUsers];
+            userIds.forEach(id => {
+                if (!newOnlineUsers.includes(id)) {
+                    newOnlineUsers.push(id);
+                }
+            });
+            setOnlineUsers(newOnlineUsers);
+        };
+        const onUserDisconnect = (users: TUser[]) => {
+            const userIds = users.map(user => user.id).filter((id): id is string => id !== undefined);
+            setOnlineUsers(userIds);
+        };
+
+        const socket = io('http://localhost:4000', { transports: ['websocket'] });
+
+        if (socket && user) {
+            socket.emit('addNewUser', user.id);
+            socket.on('onlineUsers', onGetOnlineUserIds);
+            socket.on('disconnect onlineUsers', onUserDisconnect);
+            socket.on('newMessage', (newMessage) => {
+                setMessages((prevMessages) => [...prevMessages, newMessage]);
+            });
+        }
+
+        setSocket(socket);
+
+        return () => {
+            socket.disconnect();
+            socket.off('onlineUsers', onGetOnlineUserIds);
+            socket.off('disconnect onlineUsers', onUserDisconnect);
+            socket.off('newMessage');
+        };
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user]);
 
     const createChat = (firstId: string, secondId: string) => {
         console.log('Creating chat between', firstId, secondId);
@@ -68,7 +117,6 @@ const ChatProvider = ({ children, user }: ChatProviderProps) => {
         setIsMessagesLoading(true);
         try {
             const response = await getRequest(`messages/${chatId}`);
-            console.log('Messages', response);
             if (response.error) {
                 return setMessageError(response?.message || 'An unknown error occurred');
             }
@@ -99,6 +147,8 @@ const ChatProvider = ({ children, user }: ChatProviderProps) => {
                 return setMessageError(response?.message || 'An unknown error occurred');
             }
 
+            socket?.emit('sendMessage', response, chatWith?.id);
+
             setMessages((prevMessages) => [...prevMessages, response]);
 
         } catch (error) {
@@ -109,11 +159,11 @@ const ChatProvider = ({ children, user }: ChatProviderProps) => {
             setIsMessagesLoading(false);
         }
 
-    }, [currentChat]);
+    }, [currentChat, socket, chatWith]);
 
 
-    const updateCurrentChat = useCallback((chat: TChat, chatWithName: string) => {
-        setChatWithName(chatWithName);
+    const updateCurrentChat = useCallback((chat: TChat, chatWith: TUser) => {
+        setChatWith(chatWith);
         setCurrentChat(chat);
         getMessages(chat.id);
     }, [getMessages]);
@@ -128,7 +178,8 @@ const ChatProvider = ({ children, user }: ChatProviderProps) => {
         updateCurrentChat,
         getMessages,
         sendMessage,
-        chatWithName,
+        socket,
+        chatWith,
         isMessagesLoading,
         messages,
         userChats,
@@ -136,6 +187,7 @@ const ChatProvider = ({ children, user }: ChatProviderProps) => {
         userChatError,
         currentChat,
         messageError,
+        onlineUsers,
         user
     }}>{children}</ChatContext.Provider>;
 }
