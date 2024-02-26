@@ -14,6 +14,7 @@ const Container = styled('div')`
     padding: 5px;
 `;
 
+
 const Button = styled('button')(({ theme }) => ({
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.text.secondary,
@@ -58,6 +59,7 @@ const FormMessage = () => {
                 onChange={onChange}
                 cleanOnEnter
                 onEnter={handleClick}
+                theme="dark"
             />
             <Button onClick={handleClick}>
                 <ArrowOutwardIcon />

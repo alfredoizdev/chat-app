@@ -7,6 +7,15 @@ type User = {
     socketId: string;
 };
 
+type SendMessage = {
+    chatId: string;
+    createdAt: string;
+    id: string;
+    senderId: string;
+    text: string;
+    updatedAt: string;
+}
+
 let onlineUsers: User[] = [];
 
 io.on('connection', (socket) => {
@@ -21,12 +30,17 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('sendMessage', (response, resipientid) => {
+    socket.on('sendMessage', (response: SendMessage, resipientId: string) => {
 
-        const recipientSocketId = onlineUsers.find(user => user.id === resipientid)?.socketId;
+        const recipientSocketId = onlineUsers.find(user => user.id === resipientId)?.socketId;
 
         if (recipientSocketId) {
             io.to(recipientSocketId).emit('newMessage', response);
+            io.to(recipientSocketId).emit('newNotification', {
+                senderId: response.senderId,
+                isRead: false,
+                date: new Date().toISOString(),
+            });
         }
     });
 

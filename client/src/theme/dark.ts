@@ -16,6 +16,9 @@ export const darkTheme = createTheme({
             contrastText: '#fff',
 
         },
+        background: {
+            paper: '#333',
+        },
     },
     typography: {
         fontFamily: 'Nunito, sans-serif',

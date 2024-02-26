@@ -2,34 +2,15 @@ import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import ListItemText from '@mui/material/ListItemText';
-import useFecthResipientUser from '@/hooks/useFectRecipient';
-import { TChat } from '@/lib/types/Chat';
 import { Fragment } from 'react';
-import { Typography, styled } from '@mui/material';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 import avatar from '@/assets/profile.svg';
+import { Typography, styled } from '@mui/material';
+import { TUser } from '@/lib/types/User';
 import useChatContext from '@/hooks/useChatContext';
-import useAuthContext from '@/hooks/useAuthContext';
+import { getFromLocalstorage } from '@/lib/helpers';
 
-type ChatItemProps = {
-    chat: TChat;
-};
-
-const UnreadMessage = styled("div")(({ theme }) => ({
-    backgroundColor: theme.palette.primary.main,
-    borderRadius: "50%",
-    height: "20px",
-    width: "20px",
-    marginLeft: "5px",
-    position: "absolute",
-    top: "12px",
-    left: "5px",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 1,
-}));
 
 interface WrapperAvatarProps {
     borderColor?: boolean;
@@ -45,21 +26,19 @@ const WraperAvatar = styled("div")<WrapperAvatarProps>(({ theme, borderColor }) 
     border: `3px solid ${borderColor ? theme.palette.primary.main : "#3b3b3b"}`,
 }));
 
+type UserProps = {
+    user: TUser
+};
 
-const ChatItem = ({ chat }: ChatItemProps) => {
 
-    const { user } = useAuthContext();
+const User = ({ user }: UserProps) => {
 
-    const { unReadMessages } = useChatContext();
-    const recipientId = chat.members.find((userId) => userId !== user?.id) || "";
-    const { recipient } = useFecthResipientUser(recipientId);
-    const countUnReadMessages = unReadMessages.filter((message) => message.senderId === recipient?.id);
-    console.log(countUnReadMessages);
+    // const { recipient } = useFecthResipientUser(user?.id || "");
+    const { onlineUsers, createChat } = useChatContext();
+    const currentUser = getFromLocalstorage('user');
+    const isOnline = onlineUsers.includes(user?.id || "");
 
-    const { updateCurrentChat, onlineUsers } = useChatContext();
-    const isOnline = onlineUsers.includes(recipient?.id || "");
-
-    if (recipient === null) {
+    if (!user && !currentUser) {
         return null;
     }
 
@@ -67,16 +46,15 @@ const ChatItem = ({ chat }: ChatItemProps) => {
         <ListItem
             sx={{ cursor: "pointer" }}
             alignItems="flex-start"
-            onClick={() => updateCurrentChat(chat, recipient)}
+            onClick={() => createChat(user?.id ?? "", currentUser?.id ?? "")}
         >
-            {unReadMessages && countUnReadMessages.length > 0 && (<UnreadMessage>{countUnReadMessages.length}</UnreadMessage>)}
             <ListItemAvatar>
                 <WraperAvatar borderColor={isOnline}>
                     <Avatar alt="Remy Sharp" src={avatar} />
                 </WraperAvatar>
             </ListItemAvatar>
             <ListItemText
-                primary={recipient.name}
+                primary={user.name}
                 secondary={
                     <Fragment>
                         <Typography
@@ -92,8 +70,7 @@ const ChatItem = ({ chat }: ChatItemProps) => {
                 }
             />
         </ListItem>
-
     );
 };
 
-export default ChatItem;
+export default User;

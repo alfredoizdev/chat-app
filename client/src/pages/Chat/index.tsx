@@ -1,5 +1,8 @@
 import ChatList from "@/components/ChatList";
+import ChatHeaderList from "@/components/HeaderChatList";
+import ListOfUser from "@/components/ListOfUser";
 import MessageBox from "@/components/MessageBox";
+import useAuthContext from "@/hooks/useAuthContext";
 import useChatContext from "@/hooks/useChatContext";
 import { styled } from "@mui/material";
 
@@ -34,13 +37,15 @@ const Content = styled('div')`
 
 const Chat = () => {
 
-  const { userChats, messages } = useChatContext();
+  const { messages } = useChatContext();
+  const { showList } = useAuthContext();
 
 
   return (
     <Container>
       <Aside>
-        <ChatList chats={userChats} />
+        <ChatHeaderList />
+        {showList === "ChatRoom" ? <ChatList /> : <ListOfUser />}
       </Aside>
       <Content>
         <MessageBox messages={messages} />

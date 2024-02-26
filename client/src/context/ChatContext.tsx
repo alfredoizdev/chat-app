@@ -1,5 +1,5 @@
 import { getRequest, postRequest } from "@/lib/services";
-import { TChat, TMessage } from "@/lib/types/Chat";
+import { TChat, TMessage, TNotification } from "@/lib/types/Chat";
 import { TUser } from "@/lib/types/User";
 import { createContext, useCallback, useEffect, useState } from "react";
 import { Socket, io } from "socket.io-client";
@@ -16,6 +16,7 @@ type ChatContextType = {
     chatWith: TUser | null;
     socket: Socket | null;
     onlineUsers: string[];
+    unReadMessages: TNotification[];
     setUserChatError: (error: string) => void;
     setUserChats: (chats: TChat[]) => void;
     setIsUserChatLoading: (loading: boolean) => void;
@@ -39,6 +40,7 @@ export const ChatContext = createContext<ChatContextType>({
     chatWith: null,
     socket: null,
     onlineUsers: [],
+    unReadMessages: [],
     setUserChatError: () => { },
     setUserChats: () => { },
     setIsUserChatLoading: () => { },
@@ -66,6 +68,7 @@ const ChatProvider = ({ children, user }: ChatProviderProps) => {
     const [chatWith, setChatWith] = useState<TUser | null>(null);
     const [socket, setSocket] = useState<Socket | null>(null);
     const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
+    const [unReadMessages, setUnReadMessages] = useState<TNotification[]>([]);
 
     useEffect(() => {
         if (!user) {
@@ -95,6 +98,9 @@ const ChatProvider = ({ children, user }: ChatProviderProps) => {
             socket.on('newMessage', (newMessage) => {
                 setMessages((prevMessages) => [...prevMessages, newMessage]);
             });
+            socket.on('newNotification', (notification: TNotification) => {
+                setUnReadMessages((prevNotifications) => [...prevNotifications, notification]);
+            });
         }
 
         setSocket(socket);
@@ -109,9 +115,19 @@ const ChatProvider = ({ children, user }: ChatProviderProps) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
-    const createChat = (firstId: string, secondId: string) => {
-        console.log('Creating chat between', firstId, secondId);
-    }
+    const createChat = async (firstId: string, secondId: string) => {
+        try {
+            const response = await postRequest('chats', { firstId, secondId });
+            if (response.error) {
+                return setUserChatError(response?.message || 'An unknown error occurred');
+            }
+
+        } catch (error) {
+            if (error instanceof Error) {
+                setUserChatError(error.message);
+            }
+        }
+    };
 
     const getMessages = useCallback(async (chatId: string) => {
         setIsMessagesLoading(true);
@@ -188,6 +204,7 @@ const ChatProvider = ({ children, user }: ChatProviderProps) => {
         currentChat,
         messageError,
         onlineUsers,
+        unReadMessages,
         user
     }}>{children}</ChatContext.Provider>;
 }

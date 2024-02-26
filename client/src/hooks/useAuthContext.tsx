@@ -7,6 +7,10 @@ const useAuthContext = () => {
         error,
         isLoading,
         user,
+        showList,
+        users,
+        getListOfUsers,
+        setShowList,
         sendRegisterInfo,
         setUser,
         logOut,
@@ -32,7 +36,18 @@ const useAuthContext = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
-    return { sendRegisterInfo, error, isLoading, user, logOut, loginUser };
+    return {
+        sendRegisterInfo,
+        logOut,
+        loginUser,
+        setShowList,
+        getListOfUsers,
+        users,
+        error,
+        isLoading,
+        user,
+        showList,
+    };
 };
 
 export default useAuthContext;

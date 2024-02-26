@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
 import { getRequest } from "@/lib/services";
 import { TUser } from "@/lib/types/User";
-import { TChat } from "@/lib/types/Chat";
-import { getFromLocalstorage } from "@/lib/helpers";
+// import { TChat } from "@/lib/types/Chat";
+// import { getFromLocalstorage } from "@/lib/helpers";
 
-const useFecthResipientUser = (chat: TChat) => {
+const useFecthResipientUser = (recipientId: string) => {
     const [recipient, setRecipient] = useState<TUser | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const currentUserId = getFromLocalstorage('user')?.id;
-
-    const recipientId = chat.members.find((userId) => userId !== currentUserId);
+    //const currentUserId = getFromLocalstorage('user')?.id;
 
 
     useEffect(() => {
+
+        if (!recipientId) return;
+
         const getResipient = async () => {
             try {
                 const response = await getRequest(`users/find/${recipientId}`);

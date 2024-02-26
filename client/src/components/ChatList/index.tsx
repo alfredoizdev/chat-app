@@ -1,34 +1,36 @@
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
-import { TChat } from '@/lib/types/Chat';
 import { Fragment } from 'react';
 import ChatItem from '../ChatItem';
+import useChatContext from '@/hooks/useChatContext';
 
-type ChatListProps = {
-    chats: TChat[] | null;
-};
+const ChatList = () => {
 
-const ChatList = ({ chats }: ChatListProps) => {
+    const { userChats } = useChatContext();
 
-    if (!chats) {
+    if (!userChats) {
         return null;
     }
 
     return (
-        <List
-            sx={{
-                height: '600px',
-                overflowX: 'auto'
-            }}
-            component="nav"
-            aria-label="main mailbox folders">
-            {chats.map(chat => (
-                <Fragment key={chat.id}>
-                    <ChatItem chat={chat} />
-                    <Divider />
-                </Fragment>
-            ))}
-        </List>
+        <>
+            <List
+                sx={{
+                    height: '600px',
+                    overflowX: 'auto',
+                    marginTop: '0'
+                }}
+                component="nav"
+                aria-label="main mailbox folders"
+            >
+                {userChats.map(chat => (
+                    <Fragment key={chat.id}>
+                        <ChatItem chat={chat} />
+                        <Divider />
+                    </Fragment>
+                ))}
+            </List>
+        </>
     );
 };
 

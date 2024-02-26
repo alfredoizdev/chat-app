@@ -72,3 +72,18 @@ export const findChat = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Failed to find user chats' });
     }
 };
+
+export const getAllChats = async (req: Request, res: Response) => {
+    try {
+        const chats = await Chat.find();
+
+        if (!chats) {
+            return res.status(200).json([]);
+        }
+
+        res.status(200).json(chats);
+    } catch (error) {
+        console.error('Failed to get all chats:', error);
+        res.status(500).json({ message: 'Failed to get all chats' });
+    }
+}

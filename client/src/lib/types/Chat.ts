@@ -13,3 +13,9 @@ export interface TMessage {
     updatedAt: string;
     id: string;
 }
+
+export type TNotification = {
+    senderId: string;
+    isRead: false,
+    date: string
+}

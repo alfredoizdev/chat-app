@@ -102,44 +102,62 @@ const MessageBox = ({ messages }: MessageBoxProps) => {
     }, [messages]);
 
 
-    if (messages.length === 0) {
+    if (!chatWith) {
         return <NoMessages>
             <SpeakerNotesOffIcon sx={{ fontSize: 70, padding: '10px' }} />
-            <Typography variant="h6">No messages please select one or start an conversation</Typography>
+            <Typography variant="h6">Please select a user to start a conversation</Typography>
         </NoMessages>;
     }
 
+
     return (
         <>
-            <HeaderMessage>
-                <Typography variant="h6">Chatting with {chatWith?.name}</Typography>
-            </HeaderMessage>
-            <Container ref={endOfMessagesRef}>
-                {messages.map((message, index) => (
-                    <MessageContainer key={index}>
-                        {message.senderId !== user?.id ? (
-                            <MessageLeft>
-                                <span>
-                                    <Typography variant="body1">{message.text}</Typography>
-                                </span>
-                                <div>
-                                    <Typography variant="subtitle2"> {moment(message.createdAt).calendar()}</Typography>
-                                </div>
-                            </MessageLeft>
-                        ) : (
-                            <MessageRight>
-                                <span>
-                                    <Typography variant="body1">{message.text}</Typography>
-                                </span>
-                                <div>
-                                    <Typography variant="subtitle2">{moment(message.createdAt).calendar()}</Typography>
-                                </div>
-                            </MessageRight>
-                        )}
-                    </MessageContainer >
-                ))}
-            </Container>
-            <FormMessage />
+            {messages.length === 0 ? (
+                <>
+                    <HeaderMessage>
+                        <Typography variant="h6">Chatting with {chatWith?.name}</Typography>
+                    </HeaderMessage>
+                    <Container ref={endOfMessagesRef}>
+                        <NoMessages>
+                            <SpeakerNotesOffIcon sx={{ fontSize: 70, padding: '10px' }} />
+                            <Typography variant="h6">No messages found</Typography>
+                        </NoMessages>
+                        <FormMessage />
+                    </Container>
+                </>
+
+            ) : (<>
+                <HeaderMessage>
+                    <Typography variant="h6">Chatting with {chatWith?.name}</Typography>
+                </HeaderMessage>
+                <Container ref={endOfMessagesRef}>
+                    {messages.map((message, index) => (
+                        <MessageContainer key={index}>
+                            {message.senderId !== user?.id ? (
+                                <MessageLeft>
+                                    <span>
+                                        <Typography variant="body1">{message.text}</Typography>
+                                    </span>
+                                    <div>
+                                        <Typography variant="subtitle2"> {moment(message.createdAt).calendar()}</Typography>
+                                    </div>
+                                </MessageLeft>
+                            ) : (
+                                <MessageRight>
+                                    <span>
+                                        <Typography variant="body1">{message.text}</Typography>
+                                    </span>
+                                    <div>
+                                        <Typography variant="subtitle2">{moment(message.createdAt).calendar()}</Typography>
+                                    </div>
+                                </MessageRight>
+                            )}
+                        </MessageContainer >
+                    ))}
+                </Container>
+                <FormMessage />
+            </>)}
+
         </>
 
     );

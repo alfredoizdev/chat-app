@@ -11,6 +11,7 @@ const useChatContext = () => {
         setIsUserChatLoading,
         updateCurrentChat,
         sendMessage,
+        unReadMessages,
         currentChat,
         userChats,
         messages,
@@ -55,13 +56,14 @@ const useChatContext = () => {
 
     return {
         createChat,
-        userChats,
-        currentChat,
         updateCurrentChat,
         sendMessage,
+        userChats,
+        currentChat,
         messages,
         chatWith,
-        onlineUsers
+        onlineUsers,
+        unReadMessages
     };
 };
 
