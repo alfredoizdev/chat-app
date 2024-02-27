@@ -17,6 +17,7 @@ type ChatContextType = {
     socket: Socket | null;
     onlineUsers: string[];
     unReadMessages: TUnread[];
+    setChatWith: (chatWith: TUser | null) => void;
     setCurrentChat: (chat: TChat | null) => void;
     setUserChatError: (error: string) => void;
     setUserChats: (chats: TChat[]) => void;
@@ -42,6 +43,7 @@ export const ChatContext = createContext<ChatContextType>({
     socket: null,
     onlineUsers: [],
     unReadMessages: [],
+    setChatWith: () => { },
     setCurrentChat: () => { },
     setUserChatError: () => { },
     setUserChats: () => { },
@@ -277,6 +279,7 @@ const ChatProvider = ({ children, user }: ChatProviderProps) => {
         getMessages,
         sendMessage,
         setCurrentChat,
+        setChatWith,
         socket,
         chatWith,
         isMessagesLoading,

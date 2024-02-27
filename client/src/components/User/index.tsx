@@ -10,6 +10,8 @@ import { Typography, styled } from '@mui/material';
 import { TUser } from '@/lib/types/User';
 import useChatContext from '@/hooks/useChatContext';
 import { getFromLocalstorage } from '@/lib/helpers';
+import useAuthContext from '@/hooks/useAuthContext';
+import FadeIn from '../shared/FadeIn/FadeIn';
 
 
 interface WrapperAvatarProps {
@@ -30,11 +32,11 @@ type UserProps = {
     user: TUser
 };
 
-
 const User = ({ user }: UserProps) => {
 
     // const { recipient } = useFecthResipientUser(user?.id || "");
     const { onlineUsers, createChat } = useChatContext();
+    const { setShowList } = useAuthContext();
     const currentUser = getFromLocalstorage('user');
     const isOnline = onlineUsers.includes(user?.id || "");
 
@@ -42,34 +44,41 @@ const User = ({ user }: UserProps) => {
         return null;
     }
 
+    const handleOnClick = () => {
+        createChat(user?.id ?? "", currentUser?.id ?? "");
+        setShowList("ChatRoom");
+    };
+
     return (
-        <ListItem
-            sx={{ cursor: "pointer" }}
-            alignItems="flex-start"
-            onClick={() => createChat(user?.id ?? "", currentUser?.id ?? "")}
-        >
-            <ListItemAvatar>
-                <WraperAvatar borderColor={isOnline}>
-                    <Avatar alt="Remy Sharp" src={avatar} />
-                </WraperAvatar>
-            </ListItemAvatar>
-            <ListItemText
-                primary={user.name}
-                secondary={
-                    <Fragment>
-                        <Typography
-                            sx={{ display: 'inline' }}
-                            component="span"
-                            variant="body2"
-                            color="text.primary"
-                        >
-                            " 12-11-2021"
-                        </Typography>
-                        {" — I'll be in your this…"}
-                    </Fragment>
-                }
-            />
-        </ListItem>
+        <FadeIn>
+            <ListItem
+                sx={{ cursor: "pointer" }}
+                alignItems="flex-start"
+                onClick={handleOnClick}
+            >
+                <ListItemAvatar>
+                    <WraperAvatar borderColor={isOnline}>
+                        <Avatar alt="Remy Sharp" src={avatar} />
+                    </WraperAvatar>
+                </ListItemAvatar>
+                <ListItemText
+                    primary={user.name}
+                    secondary={
+                        <Fragment>
+                            <Typography
+                                sx={{ display: 'inline' }}
+                                component="span"
+                                variant="body2"
+                                color="text.primary"
+                            >
+                                " 12-11-2021"
+                            </Typography>
+                            {" — I'll be in your this…"}
+                        </Fragment>
+                    }
+                />
+            </ListItem>
+        </FadeIn>
     );
 };
 

@@ -11,6 +11,7 @@ import { Typography, styled } from '@mui/material';
 import avatar from '@/assets/profile.svg';
 import useChatContext from '@/hooks/useChatContext';
 import useAuthContext from '@/hooks/useAuthContext';
+import FadeIn from '../shared/FadeIn/FadeIn';
 
 type ChatItemProps = {
     chat: TChat;
@@ -63,34 +64,36 @@ const ChatItem = ({ chat }: ChatItemProps) => {
     }
 
     return (
-        <ListItem
-            sx={{ cursor: "pointer" }}
-            alignItems="flex-start"
-            onClick={() => updateCurrentChat(chat, recipient)}
-        >
-            {countUnReadMessages && countUnReadMessages.unRead !== 0 && (<UnreadMessage>{countUnReadMessages.unRead}</UnreadMessage>)}
-            <ListItemAvatar>
-                <WraperAvatar borderColor={isOnline}>
-                    <Avatar alt="Remy Sharp" src={avatar} />
-                </WraperAvatar>
-            </ListItemAvatar>
-            <ListItemText
-                primary={recipient.name}
-                secondary={
-                    <Fragment>
-                        <Typography
-                            sx={{ display: 'inline' }}
-                            component="span"
-                            variant="body2"
-                            color="text.primary"
-                        >
-                            " 12-11-2021"
-                        </Typography>
-                        {" — I'll be in your this…"}
-                    </Fragment>
-                }
-            />
-        </ListItem>
+        <FadeIn>
+            <ListItem
+                sx={{ cursor: "pointer" }}
+                alignItems="flex-start"
+                onClick={() => updateCurrentChat(chat, recipient)}
+            >
+                {countUnReadMessages && countUnReadMessages.unRead !== 0 && (<UnreadMessage>{countUnReadMessages.unRead}</UnreadMessage>)}
+                <ListItemAvatar>
+                    <WraperAvatar borderColor={isOnline}>
+                        <Avatar alt="Remy Sharp" src={avatar} />
+                    </WraperAvatar>
+                </ListItemAvatar>
+                <ListItemText
+                    primary={recipient.name}
+                    secondary={
+                        <Fragment>
+                            <Typography
+                                sx={{ display: 'inline' }}
+                                component="span"
+                                variant="body2"
+                                color="text.primary"
+                            >
+                                " 12-11-2021"
+                            </Typography>
+                            {" — I'll be in your this…"}
+                        </Fragment>
+                    }
+                />
+            </ListItem>
+        </FadeIn>
 
     );
 };

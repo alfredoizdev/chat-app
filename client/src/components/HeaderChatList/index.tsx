@@ -36,10 +36,11 @@ const Button = styled("div")<ButtonProps>(({ theme, active }) => ({
 const ChatHeaderList = () => {
 
     const { setShowList, showList } = useAuthContext();
-    const { setCurrentChat } = useChatContext();
+    const { setCurrentChat, setChatWith } = useChatContext();
 
     const handleOnClick = (whatToShow: string) => {
         setCurrentChat(null);
+        setChatWith(null);
         setShowList(whatToShow === "ChatRoom" ? "ChatRoom" : "ListUser");
     };
 

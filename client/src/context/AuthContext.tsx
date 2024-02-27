@@ -100,6 +100,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     }, []);
 
     const getListOfUsers = useCallback(async () => {
+        setIsLoading(true);
         try {
             const response = await getRequest('users');
             if (response?.error) {
@@ -131,6 +132,8 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
             if (error instanceof Error) {
                 setError(error.message);
             }
+        } finally {
+            setIsLoading(false);
         }
     }, [])
 

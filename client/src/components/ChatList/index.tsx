@@ -3,10 +3,11 @@ import Divider from '@mui/material/Divider';
 import { Fragment } from 'react';
 import ChatItem from '../ChatItem';
 import useChatContext from '@/hooks/useChatContext';
+import SkeletonCard from '../shared/SkeletonCard/SkeletonCard';
 
 const ChatList = () => {
 
-    const { userChats } = useChatContext();
+    const { userChats, isUserChatLoading } = useChatContext();
 
     if (!userChats) {
         return null;
@@ -23,6 +24,9 @@ const ChatList = () => {
                 component="nav"
                 aria-label="main mailbox folders"
             >
+                {isUserChatLoading &&
+                    <SkeletonCard many={4} />
+                }
                 {userChats.map(chat => (
                     <Fragment key={chat.id}>
                         <ChatItem chat={chat} />

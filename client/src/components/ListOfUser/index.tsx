@@ -3,15 +3,15 @@ import Divider from '@mui/material/Divider';
 import { Fragment, useEffect } from 'react';
 import useAuthContext from '@/hooks/useAuthContext';
 import User from '../User';
+import SkeletonCard from '../shared/SkeletonCard/SkeletonCard';
 
 
 
 const ListOfUser = () => {
 
-    const { users, getListOfUsers } = useAuthContext();
+    const { users, getListOfUsers, isLoading } = useAuthContext();
 
     useEffect(() => {
-        if (users && users?.length > 0) return;
         getListOfUsers();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -30,6 +30,11 @@ const ListOfUser = () => {
             component="nav"
             aria-label="main mailbox folders"
         >
+            {isLoading && (
+                <>
+                    <SkeletonCard many={4} />
+                </>
+            )}
             {users.map(user => (
                 <Fragment key={user.id}>
                     <User user={user} />
