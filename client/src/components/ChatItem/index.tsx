@@ -53,8 +53,7 @@ const ChatItem = ({ chat }: ChatItemProps) => {
     const { unReadMessages } = useChatContext();
     const recipientId = chat.members.find((userId) => userId !== user?.id) || "";
     const { recipient } = useFecthResipientUser(recipientId);
-    const countUnReadMessages = unReadMessages.filter((message) => message.senderId === recipient?.id);
-    console.log(countUnReadMessages);
+    const countUnReadMessages = unReadMessages.filter((message) => message.senderId === recipient?.id)[0];
 
     const { updateCurrentChat, onlineUsers } = useChatContext();
     const isOnline = onlineUsers.includes(recipient?.id || "");
@@ -69,7 +68,7 @@ const ChatItem = ({ chat }: ChatItemProps) => {
             alignItems="flex-start"
             onClick={() => updateCurrentChat(chat, recipient)}
         >
-            {unReadMessages && countUnReadMessages.length > 0 && (<UnreadMessage>{countUnReadMessages.length}</UnreadMessage>)}
+            {countUnReadMessages && countUnReadMessages.unRead !== 0 && (<UnreadMessage>{countUnReadMessages.unRead}</UnreadMessage>)}
             <ListItemAvatar>
                 <WraperAvatar borderColor={isOnline}>
                     <Avatar alt="Remy Sharp" src={avatar} />

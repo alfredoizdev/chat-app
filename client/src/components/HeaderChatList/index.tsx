@@ -3,6 +3,7 @@ import { styled } from '@mui/system';
 import ForumIcon from '@mui/icons-material/Forum';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import useAuthContext from '@/hooks/useAuthContext';
+import useChatContext from '@/hooks/useChatContext';
 
 const Container = styled('div')({
     width: '100%',
@@ -35,18 +36,24 @@ const Button = styled("div")<ButtonProps>(({ theme, active }) => ({
 const ChatHeaderList = () => {
 
     const { setShowList, showList } = useAuthContext();
+    const { setCurrentChat } = useChatContext();
+
+    const handleOnClick = (whatToShow: string) => {
+        setCurrentChat(null);
+        setShowList(whatToShow === "ChatRoom" ? "ChatRoom" : "ListUser");
+    };
 
     return (
         <Container>
             <Button
                 active={showList === "ChatRoom"}
-                onClick={() => setShowList("ChatRoom")}
+                onClick={() => handleOnClick("ChatRoom")}
             >
                 <ForumIcon />
             </Button>
             <Button
                 active={showList === "ListUser"}
-                onClick={() => setShowList("ListUser")}
+                onClick={() => handleOnClick("ListUser")}
             >
                 <PeopleAltIcon />
             </Button>

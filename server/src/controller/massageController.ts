@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Message from "../models/Message";
+import Unread from "../models/Unread";
 
 export const createMessage = async (req: Request, res: Response) => {
     const { chatId, senderId, text } = req.body;
@@ -15,7 +16,20 @@ export const createMessage = async (req: Request, res: Response) => {
             return res.status(400).json({ message: 'Chat ID, sender ID, and text are required' });
         }
 
+        const unRead = await Unread.findOne({ senderId });
+        if (unRead) {
+            await Unread.updateOne({ senderId }, { $inc: { unRead: 1 } });
+        } else {
+            const newUnread = new Unread({
+                chatId,
+                senderId,
+                unRead: 1
+            });
+            await newUnread.save();
+        }
+
         const response = await newMessage.save();
+
 
         res.status(201).json(response);
 

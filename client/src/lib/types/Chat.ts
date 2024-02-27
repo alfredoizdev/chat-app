@@ -17,5 +17,11 @@ export interface TMessage {
 export type TNotification = {
     senderId: string;
     isRead: false,
-    date: string
+    date?: string
+}
+
+export type TUnread = {
+    id: string;
+    senderId: string;
+    unRead: number;
 }

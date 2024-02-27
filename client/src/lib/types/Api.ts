@@ -1,4 +1,4 @@
-import { TChat, TMessage } from "./Chat";
+import { TChat, TMessage, TUnread } from "./Chat";
 import { TUser } from "./User";
 
 export type TResponseData = TUser
@@ -7,6 +7,8 @@ export type TResponseData = TUser
     & TChat
     & TMessage
     & TMessage[]
+    & TUnread[]
+    & TUnread
     & {
         status: string;
         error?: boolean;

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Chat from '../models/Chat';
+import Unread from '../models/Unread';
 
 export const createChat = async (req: Request, res: Response) => {
     const { firstId, secondId } = req.body;
@@ -86,4 +87,52 @@ export const getAllChats = async (req: Request, res: Response) => {
         console.error('Failed to get all chats:', error);
         res.status(500).json({ message: 'Failed to get all chats' });
     }
-}
+};
+
+export const getUnreadMessagesBySenderId = async (req: Request, res: Response) => {
+    const { senderId } = req.params;
+
+    if (!senderId) {
+        return res.status(400).json({ message: 'Chat ID and user ID are required' });
+    }
+
+    try {
+        const unread = await Unread.findOne({ senderId });
+
+        if (!unread) {
+            return res.status(404).json({ message: 'Unread message not found' });
+        }
+
+        res.status(200).json(unread);
+
+    } catch (error) {
+        console.error('Failed to get unread messages:', error);
+        res.status(500).json({ message: 'Failed to get unread messages' });
+    }
+};
+
+export const getAllUnreadMessages = async (req: Request, res: Response) => {
+    try {
+        const unread = await Unread.find();
+
+        if (!unread) {
+            return res.status(200).json([]);
+        }
+        res.status(200).json(unread);
+    } catch (error) {
+        console.error('Failed to get all unread messages:', error);
+        res.status(500).json({ message: 'Failed to get all unread messages' });
+    }
+};
+
+export const cleanUnreadMessages = async (req: Request, res: Response) => {
+    const { senderId } = req.body;
+    try {
+        await Unread.findOneAndUpdate({ senderId }, { unRead: 0 }, { new: true });
+        res.status(200).json({ message: 'Unread messages cleaned' });
+    } catch (error) {
+        console.error('Failed to clean unread messages:', error);
+        res.status(500).json({ message: 'Failed to clean unread messages' });
+
+    }
+};
